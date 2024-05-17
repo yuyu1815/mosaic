@@ -16,13 +16,14 @@ config.read('Setting.ini', encoding='utf-8')
 # 文字列として取得
 language_string = config.get('setting', 'language')
 # 文字列をリストに変換
-language_list = language_string.strip('[]').split(',')
-reader = easyocr.Reader(language_list)
+#language_list = language_string.strip('[]').split(',')
+#print(language_list)
+language_list=['en','ch_sim']
 
 def main():
     print("文字列削除")
     print(image_files_1)
-    process_images(image_files_1, reader)
+    process_images(image_files_1)
     for image_file in tqdm(image_files_2):
         white_to_transparency(f'./mosaic/{image_file}', './temp_m')
 
@@ -43,21 +44,27 @@ def white_to_transparency(img_path, output_path):
     img.putdata(newData)
     img.save(output_path, "PNG")
 
-def process_images(image_files, reader):
+def process_images(image_files):
+    reader = easyocr.Reader(language_list, gpu=True)
     for image_file in tqdm(image_files):
-        result = reader.readtext(image_file)
+        # グレースケール画像でOCRを実行
+        image_gray = Image.open(image_file).convert('L')
+        image_gray.save(f"./temp_gray/{image_file.replace('.jpg', '_gray.png')}", "PNG")
 
+        result = reader.readtext(f"./.temp_gray/{image_file.replace('.jpg', '_gray.png')}", paragraph=True)
+        # 元のカラー画像を開く
         image = Image.open(image_file)
         draw = ImageDraw.Draw(image)
 
-        # 各領域を白で塗りつぶす
-        for item in result:
+        # テキスト検出領域を白で塗りつぶす（元の画像上で）
+        for item in result:  # 二つの結果を結合
             coordinates = item[0]
-            # 座標を変換して四角形を描画
             polygon = [(x, y) for x, y in coordinates]
             draw.polygon(polygon, fill="white")
 
-        image.save(f"./.temp/{ image_file}", "PNG")
-        white_to_transparency(f"./.temp/{image_file}", "./temp_nm")
+    image.save(f"./.temp/{ image_file.replace('.jpg', '.png')}", "PNG")
+    white_to_transparency(f"./.temp/{image_file.replace('.jpg', '.png')}", "./temp_nm")
+
+
 
 main()
