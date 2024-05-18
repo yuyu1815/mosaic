@@ -1,32 +1,74 @@
-import configparser
 import easyocr
 import os,glob
 from tqdm import tqdm
 from PIL import Image, ImageDraw
-
+from upscaling_win import upscaling
+from collections import Counter
 
 folder_path_1 = './Not_mosaic'
 folder_path_2 = './mosaic'
 
-
-image_files_1 = glob.glob(os.path.join(folder_path_1, '*.jpg')) + glob.glob(os.path.join(folder_path_1, '*.png'))
-image_files_2 = glob.glob(os.path.join(folder_path_2, '*.jpg')) + glob.glob(os.path.join(folder_path_2, '*.png'))
-#コンフィグからocr言語取得
-config = configparser.ConfigParser()
-config.read('Setting.ini', encoding='utf-8')
-# 文字列として取得
-language_string = config.get('setting', 'language')
+image_files_1 = None
+image_files_2 = None
 # 文字列をリストに変換
-#language_list = language_string.strip('[]').split(',')
-#print(language_list)
 language_list=['en','ch_sim']
 
 def main():
+    which_folder = which_folder_get_image_sizes(folder_path_1, folder_path_2)
+    print("アップスケーリング")
+    if which_folder:
+        upscaling.upscaling(which_folder[0])
+        print("ダウンスケーリング")
+        if which_folder[1] == 1:
+            downscaling(folder_path_1, folder_path_2)
+        else:
+            downscaling(folder_path_2, folder_path_1)
+    which_folder = downscaling(folder_path_1, folder_path_2)
+
     print("文字列削除")
-    print(image_files_1)
-    process_images(image_files_1)
+    image_files_1 = glob.glob(os.path.join(folder_path_1, '*.jpg')) + glob.glob(os.path.join(folder_path_1, '*.png'))
+    image_files_2 = glob.glob(os.path.join(folder_path_2, '*.jpg')) + glob.glob(os.path.join(folder_path_2, '*.png'))
+    #process_images(image_files_1)
     for image_file in tqdm(image_files_2):
-        white_to_transparency(f'./mosaic/{image_file}', './temp')
+        white_to_transparency(image_file, f"./.temp/{image_file.replace('.jpg', '.png')}")
+
+def downscaling(folder_path1, folder_path2):
+
+    for image_file1,image_file2 in folder_path1, folder_path2:
+        width1, height1 = folder_path_get_image_size(image_file1)
+        width2, height2 = folder_path_get_image_size(image_file2)
+        between_sizes_high = width1 - width2
+        between_sizes_width = height1 - height2
+        
+
+def folder_path_get_image_size(image_file):
+    image = Image.open(image_file)
+    width, height = image.size
+    return (width, height)
+
+def which_folder_get_image_sizes(folder_path1, folder_path2):
+    most_frequent_resolution1 = folder_path_get_image_sizes(folder_path1)
+    most_frequent_resolution2 = folder_path_get_image_sizes(folder_path2)
+
+    if most_frequent_resolution1[0] > most_frequent_resolution2[0] or most_frequent_resolution1[1] > most_frequent_resolution2[1]:
+        #2をアップスケーリング
+        return folder_path2,2
+    elif most_frequent_resolution1[0] < most_frequent_resolution2[0] or most_frequent_resolution1[1] < most_frequent_resolution2[1]:
+        #1をアップスケーリング
+        return folder_path1,1
+    else:
+        return None
+
+def folder_path_get_image_sizes(folder_path):
+    image_files = [f for f in os.listdir(folder_path) if f.endswith(('.jpg', '.png'))]
+    image_sizes = []
+    for image_file in image_files:
+        image_path = os.path.join(folder_path, image_file)
+        image = Image.open(image_path)
+        width, height = image.size
+        image_sizes.append((image_file, width, height))
+    most_frequent_resolution = Counter(image_sizes).most_common(1)[0][0]
+    return most_frequent_resolution
 
 
 def white_to_transparency(img_path, output_path):
@@ -41,7 +83,6 @@ def white_to_transparency(img_path, output_path):
             newData.append((255, 255, 255, 0))
         else:
             newData.append(item)
-
     img.putdata(newData)
     img.save(output_path, "PNG")
 
@@ -66,7 +107,6 @@ def process_images(image_files):
 
     for image_file in tqdm(image_files):
         white_to_transparency(f"./.temp/{image_file.replace('.jpg', '.png')}", f"./.temp/{image_file.replace('.jpg', '.png')}")
-
 
 def convert_to_black_and_white(image_path, threshold=100):
     """
