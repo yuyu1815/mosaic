@@ -4,26 +4,28 @@ from tqdm import tqdm
 from PIL import Image, ImageDraw
 from upscaling_win import upscaling
 from collections import Counter
+import replace
 
 folder_path_1 = './Not_mosaic'
 folder_path_2 = './mosaic'
 
-image_files_1 = None
-image_files_2 = None
+image_files_1 = glob.glob(os.path.join(folder_path_1, '*.jpg')) + glob.glob(os.path.join(folder_path_1, '*.png'))
+image_files_2 = glob.glob(os.path.join(folder_path_2, '*.jpg')) + glob.glob(os.path.join(folder_path_2, '*.png'))
 # 文字列をリストに変換
 language_list=['en','ch_sim']
 
 def main():
+    image_files_1 = glob.glob(os.path.join(folder_path_1, '*.jpg')) + glob.glob(os.path.join(folder_path_1, '*.png'))
+    image_files_2 = glob.glob(os.path.join(folder_path_2, '*.jpg')) + glob.glob(os.path.join(folder_path_2, '*.png'))
+
+    replace.replace(image_files_1, image_files_2)
+    replace.change_name(image_files_1, image_files_2)
     which_folder = which_folder_get_image_sizes(folder_path_1, folder_path_2)
     print("アップスケーリング")
     if which_folder:
         upscaling.upscaling(which_folder[0])
         print("ダウンスケーリング")
-        if which_folder[1] == 1:
-            downscaling(folder_path_1, folder_path_2)
-        else:
-            downscaling(folder_path_2, folder_path_1)
-    which_folder = downscaling(folder_path_1, folder_path_2)
+        downscaling(folder_path_1, folder_path_2)
 
     print("文字列削除")
     image_files_1 = glob.glob(os.path.join(folder_path_1, '*.jpg')) + glob.glob(os.path.join(folder_path_1, '*.png'))
@@ -37,8 +39,22 @@ def downscaling(folder_path1, folder_path2):
     for image_file1,image_file2 in folder_path1, folder_path2:
         width1, height1 = folder_path_get_image_size(image_file1)
         width2, height2 = folder_path_get_image_size(image_file2)
+
         between_sizes_high = width1 - width2
         between_sizes_width = height1 - height2
+
+        if between_sizes_high > 0 and between_sizes_width > 0:
+            #ダウンスケーリング
+            img = Image.open(image_file1)
+            img_resized = img.resize((img.width-between_sizes_high, img.height-between_sizes_high))
+            img_resized.save(f"./.temp_up/{image_file1}")
+        else:
+            img = Image.open(image_file1)
+            img_resized = img.resize((img.width + between_sizes_high, img.height + between_sizes_width))
+            img_resized.save(f"./.temp_up/{image_file1}")
+
+
+
         
 
 def folder_path_get_image_size(image_file):
@@ -52,10 +68,10 @@ def which_folder_get_image_sizes(folder_path1, folder_path2):
 
     if most_frequent_resolution1[0] > most_frequent_resolution2[0] or most_frequent_resolution1[1] > most_frequent_resolution2[1]:
         #2をアップスケーリング
-        return folder_path2,2
+        return folder_path2
     elif most_frequent_resolution1[0] < most_frequent_resolution2[0] or most_frequent_resolution1[1] < most_frequent_resolution2[1]:
         #1をアップスケーリング
-        return folder_path1,1
+        return folder_path1
     else:
         return None
 
