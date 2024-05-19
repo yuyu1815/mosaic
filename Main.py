@@ -3,90 +3,34 @@ import os,glob
 from tqdm import tqdm
 from PIL import Image, ImageDraw
 from upscaling_win import upscaling
-from collections import Counter
-import replace
+
+
 
 folder_path_1 = './Not_mosaic'
 folder_path_2 = './mosaic'
 
-image_files_1 = glob.glob(os.path.join(folder_path_1, '*.jpg')) + glob.glob(os.path.join(folder_path_1, '*.png'))
-image_files_2 = glob.glob(os.path.join(folder_path_2, '*.jpg')) + glob.glob(os.path.join(folder_path_2, '*.png'))
-# 文字列をリストに変換
+image_files_1 = None
+image_files_2 = None
 language_list=['en','ch_sim']
 
 def main():
     image_files_1 = glob.glob(os.path.join(folder_path_1, '*.jpg')) + glob.glob(os.path.join(folder_path_1, '*.png'))
     image_files_2 = glob.glob(os.path.join(folder_path_2, '*.jpg')) + glob.glob(os.path.join(folder_path_2, '*.png'))
-
-    replace.replace(image_files_1, image_files_2)
-    replace.change_name(image_files_1, image_files_2)
-    which_folder = which_folder_get_image_sizes(folder_path_1, folder_path_2)
     print("アップスケーリング")
-    if which_folder:
-        upscaling.upscaling(which_folder[0])
-        print("ダウンスケーリング")
-        downscaling(folder_path_1, folder_path_2)
-
+    upscaling.upscaling(image_files_1, image_files_2)
     print("文字列削除")
-    image_files_1 = glob.glob(os.path.join(folder_path_1, '*.jpg')) + glob.glob(os.path.join(folder_path_1, '*.png'))
-    image_files_2 = glob.glob(os.path.join(folder_path_2, '*.jpg')) + glob.glob(os.path.join(folder_path_2, '*.png'))
-    #process_images(image_files_1)
+    process_images(image_files_1)
+"""
+名前の入れ替えは諦めました
+opnecvと白黒は相性悪い！！！
+"""
+
+
+
+"""
     for image_file in tqdm(image_files_2):
         white_to_transparency(image_file, f"./.temp/{image_file.replace('.jpg', '.png')}")
-
-def downscaling(folder_path1, folder_path2):
-
-    for image_file1,image_file2 in folder_path1, folder_path2:
-        width1, height1 = folder_path_get_image_size(image_file1)
-        width2, height2 = folder_path_get_image_size(image_file2)
-
-        between_sizes_high = width1 - width2
-        between_sizes_width = height1 - height2
-
-        if between_sizes_high > 0 and between_sizes_width > 0:
-            #ダウンスケーリング
-            img = Image.open(image_file1)
-            img_resized = img.resize((img.width-between_sizes_high, img.height-between_sizes_high))
-            img_resized.save(f"./.temp_up/{image_file1}")
-        else:
-            img = Image.open(image_file1)
-            img_resized = img.resize((img.width + between_sizes_high, img.height + between_sizes_width))
-            img_resized.save(f"./.temp_up/{image_file1}")
-
-
-
-        
-
-def folder_path_get_image_size(image_file):
-    image = Image.open(image_file)
-    width, height = image.size
-    return (width, height)
-
-def which_folder_get_image_sizes(folder_path1, folder_path2):
-    most_frequent_resolution1 = folder_path_get_image_sizes(folder_path1)
-    most_frequent_resolution2 = folder_path_get_image_sizes(folder_path2)
-
-    if most_frequent_resolution1[0] > most_frequent_resolution2[0] or most_frequent_resolution1[1] > most_frequent_resolution2[1]:
-        #2をアップスケーリング
-        return folder_path2
-    elif most_frequent_resolution1[0] < most_frequent_resolution2[0] or most_frequent_resolution1[1] < most_frequent_resolution2[1]:
-        #1をアップスケーリング
-        return folder_path1
-    else:
-        return None
-
-def folder_path_get_image_sizes(folder_path):
-    image_files = [f for f in os.listdir(folder_path) if f.endswith(('.jpg', '.png'))]
-    image_sizes = []
-    for image_file in image_files:
-        image_path = os.path.join(folder_path, image_file)
-        image = Image.open(image_path)
-        width, height = image.size
-        image_sizes.append((image_file, width, height))
-    most_frequent_resolution = Counter(image_sizes).most_common(1)[0][0]
-    return most_frequent_resolution
-
-
+"""
 def white_to_transparency(img_path, output_path):
     img = Image.open(img_path)
     img = img.convert("RGBA")
@@ -102,15 +46,16 @@ def white_to_transparency(img_path, output_path):
     img.putdata(newData)
     img.save(output_path, "PNG")
 
-def process_images(image_files):
+def process_images(image_files,input_path="./.temp_up"):
     reader = easyocr.Reader(language_list, gpu=True)
+    # グレー化
     for image_file in tqdm(image_files):
         convert_to_black_and_white(image_file)
-
+    # テキスト検出
     for image_file in tqdm(image_files):
         result = reader.readtext(f"./.temp_g/{image_file.replace('.jpg', '.png')}", paragraph=True)
         # 元のカラー画像を開く
-        image = Image.open(image_file)
+        image = Image.open(f"{input_path}/{image_file}")
         draw = ImageDraw.Draw(image)
 
         # テキスト検出領域を白で塗りつぶす（元の画像上で）
