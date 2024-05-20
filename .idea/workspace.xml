@@ -6,10 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="13029daf-20d8-4d1c-be11-9d009c20f8ec" name="変更" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Main.py" beforeDir="false" afterPath="$PROJECT_DIR$/Main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/replace.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_nm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/upscaling_win/upscaling.py" beforeDir="false" afterPath="$PROJECT_DIR$/upscaling_win/upscaling.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -36,12 +32,12 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
-    "Python.Main.executor": "Debug",
+    "Python.Main.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "git-widget-placeholder": "main",
     "ignore.virus.scanning.warn.message": "true",
-    "last_opened_file_path": "C:/Users/yuyu/Desktop/github/mosaic/.temp_up",
+    "last_opened_file_path": "C:/Users/schoo/Documents/GitHub/mosaic/.temp",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -52,13 +48,14 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\schoo\Documents\GitHub\mosaic\.temp" />
       <recent name="C:\Users\yuyu\Desktop\github\mosaic\.temp_up" />
       <recent name="C:\Users\schoo\Documents\GitHub\mosaic" />
       <recent name="C:\Users\yuyu\Desktop\github\mosaic\.temp_gray" />
       <recent name="C:\Users\yuyu\Desktop\github\mosaic\Not_mosaic" />
-      <recent name="C:\Users\yuyu\Desktop\github\mosaic" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\schoo\Documents\GitHub\mosaic" />
       <recent name="C:\Users\yuyu\Desktop\github\mosaic" />
       <recent name="C:\Users\yuyu\Desktop\github\mosaic\.temp" />
     </key>
@@ -117,11 +114,23 @@
       <workItem from="1716028894328" duration="5006000" />
       <workItem from="1716038881761" duration="7209000" />
       <workItem from="1716091969803" duration="32850000" />
+      <workItem from="1716163786742" duration="2685000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="XDebuggerManager">
     <watches-manager>
