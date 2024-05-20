@@ -4,8 +4,6 @@ from tqdm import tqdm
 from PIL import Image, ImageDraw
 from upscaling_win import upscaling
 
-
-
 folder_path_1 = './Not_mosaic'
 folder_path_2 = './mosaic'
 

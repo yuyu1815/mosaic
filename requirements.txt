@@ -7,7 +7,7 @@ attr==0.3.2
 av==12.0.0
 beartype==0.18.5
 charset_normalizer==3.3.2
-conda==4.3.16
+#onda== 4.3.16
 ConfigParser==7.0.0
 contextlib2==21.6.0
 coremltools==7.2
@@ -22,6 +22,7 @@ disco==1.40.4
 dl==0.1.0
 docutils==0.21.2
 etcd==2.0.8
+easyocr
 expecttest==0.2.1
 fastparquet==2024.2.0
 foo==.1
