@@ -24,9 +24,6 @@ def main():
 名前の入れ替えは諦めました
 opnecvと白黒は相性悪い！！！
 """
-
-
-
 """
     for image_file in tqdm(image_files_2):
         white_to_transparency(image_file, f"./.temp/{image_file.replace('.jpg', '.png')}")
@@ -82,7 +79,7 @@ def convert_to_black_and_white(image_path, threshold=100):
     # グレースケールに変換
     image = image.convert('L')
     # 二値化を実行
-    image = image.point(lambda x: 255 if x >= threshold else 0)
+    #image = image.point(lambda x: 255 if x >= threshold else 0)
     # 二値化した画像を'L'モードで保存
     save_path = f"./.temp_g/{image_path.replace('.jpg', '.png')}"
     image.save(save_path, "PNG")
