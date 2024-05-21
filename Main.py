@@ -1,10 +1,12 @@
 import os,glob
 from ocr import process_images
-
+#外国語
 folder_path_1 = './Not_mosaic'
+#日本語
 folder_path_2 = './mosaic'
-
+#外国語
 image_files_1 = None
+#日本語
 image_files_2 = None
 
 

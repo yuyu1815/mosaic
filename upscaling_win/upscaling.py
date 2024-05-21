@@ -2,13 +2,10 @@ import subprocess
 from tqdm import tqdm
 import cv2
 
-
 def load_image(image_path):
     # 画像を読み込む
     image = cv2.imread(image_path)
     return image
-
-
 
 def upscaling(input_path1,input_path2, print_result=False,model="realesrgan-x4plus-anime",output_path="./.temp_up"):
 
@@ -47,7 +44,6 @@ def upscaling(input_path1,input_path2, print_result=False,model="realesrgan-x4pl
         for input_image in tqdm(input_path2):
             result = load_image(input_image)
             cv2.imwrite(f"{output_path}/{input_image}", result)
-
 
 def downscaling(folder_path1, folder_path2,output_path="./.temp_up"):
 
