@@ -1,7 +1,7 @@
 from tqdm import tqdm
 from PIL import Image, ImageDraw
-import easyocr
-def white_to_transparency(img_path, output_path):
+import easyocr, cv2
+def black_and_white_to_transparency(img_path, output_path):
     img = Image.open(img_path)
     img = img.convert("RGBA")
     datas = img.getdata()
@@ -9,12 +9,34 @@ def white_to_transparency(img_path, output_path):
     newData = []
     for item in datas:
         # 白色のピクセルを透明に変更する (閾値を設定)
-        if item[0] == 255 and item[1] == 255 and item[2] == 255:
-            newData.append((255, 255, 255, 0))
-        else:
+        if item[0] >= 225 and item[1] >= 225 and item[2] >= 225:
+            newData.append((0, 255, 0, 255))
+        elif item[0] <= 60 and item[1] <= 60 and item[2] <= 60:
+            newData.append((0, 0, 255, 255))
+        else :
             newData.append(item)
     img.putdata(newData)
-    img.save(output_path, "PNG")
+    img.save(output_path.replace('.jpg', '.png'), "PNG")
+def black_to_transparency(img_path, output_path):
+    img = Image.open(img_path)
+    img = img.convert("RGBA")
+    datas = img.getdata()
+
+    newData = []
+    for item in datas:
+        elif item[0] <= 60 and item[1] <= 60 and item[2] <= 60:
+            newData.append(item)
+        else:
+            newData.append((0, 0, 0, 0))
+
+    img.putdata(newData)
+    img.save(output_path.replace('.jpg', '.png'), "PNG")
+
+def noise_delete(image_files,output_path="./.temp_up"):
+    for image_file in tqdm(image_files):
+        gray_image  = cv2.imread(image_file,0)
+        img = cv2.bilateralFilter(gray_image, 9, 75, 75)
+        cv2.imwrite(f"{output_path}/{image_file.replace('.jpg', '.png')}", img)
 
 def process_images(image_files,input_path="./.temp_up"):
     language_list = ['en', 'ch_sim']
