@@ -24,7 +24,7 @@ def black_to_transparency(img_path, output_path):
 
     newData = []
     for item in datas:
-        elif item[0] <= 60 and item[1] <= 60 and item[2] <= 60:
+        if item[0] <= 60 and item[1] <= 60 and item[2] <= 60:
             newData.append(item)
         else:
             newData.append((0, 0, 0, 0))
@@ -32,6 +32,36 @@ def black_to_transparency(img_path, output_path):
     img.putdata(newData)
     img.save(output_path.replace('.jpg', '.png'), "PNG")
 
+def black_and_white_to_transparency2(img_path, output_path):
+    img = Image.open(img_path)
+    img = img.convert("RGBA")
+    datas = img.getdata()
+
+    newData = []
+    for item in datas:
+        # 白色のピクセルを透明に変更する (閾値を設定)
+        if item[0] >= 225 and item[1] >= 225 and item[2] >= 225:
+            newData.append((0, 0, 0, 0))
+        elif item[0] <= 60 and item[1] <= 60 and item[2] <= 60:
+            newData.append((0, 0, 0, 0))
+        else :
+            newData.append(item)
+    img.putdata(newData)
+    img.save(output_path.replace('.jpg', '.png'), "PNG")
+def black_to_transparency(img_path, output_path):
+    img = Image.open(img_path)
+    img = img.convert("RGBA")
+    datas = img.getdata()
+
+    newData = []
+    for item in datas:
+        if item[0] <= 60 and item[1] <= 60 and item[2] <= 60:
+            newData.append(item)
+        else:
+            newData.append((0, 0, 0, 0))
+
+    img.putdata(newData)
+    img.save(output_path.replace('.jpg', '.png'), "PNG")
 def noise_delete(image_files,output_path="./.temp_up"):
     for image_file in tqdm(image_files):
         gray_image  = cv2.imread(image_file,0)
@@ -40,12 +70,14 @@ def noise_delete(image_files,output_path="./.temp_up"):
 
 def process_images(image_files,input_path="./.temp_up"):
     language_list = ['en', 'ch_sim']
+    print(f"image:{image_files}")
     reader = easyocr.Reader(language_list, gpu=True)
     # テキスト検出
     for image_file in tqdm(image_files):
-        result = reader.readtext(f"{input_path}/{image_file}", paragraph=True,width_ths=0.1,height_ths=0.1)
+        result = reader.readtext(f"{input_path}/{image_file.replace('.jpg', '.png')}", paragraph=True,width_ths=0.1,height_ths=0.1)
         # 元のカラー画像を開く
-        image = Image.open(f"{input_path}/{image_file}")
+
+        image = Image.open(f"{input_path}/{image_file.replace('.jpg', '.png')}")
         draw = ImageDraw.Draw(image)
 
         # テキスト検出領域を白で塗りつぶす（元の画像上で）

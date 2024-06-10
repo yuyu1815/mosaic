@@ -1,6 +1,6 @@
 import os,glob
 from tqdm import tqdm
-from ocr import process_images,black_and_white_to_transparency,noise_delete
+from ocr import process_images,black_and_white_to_transparency,black_to_transparency,noise_delete,black_and_white_to_transparency2
 #外国語
 folder_path_1 = './Not_mosaic'
 #日本語
@@ -19,15 +19,21 @@ def main():
     AI_mode = input("AIによる処理をしますか？（テスト中）y/n: ")
     print("AIモード" if AI_mode == "y" else "標準モード" )
     print("ノイズ除去")
-    noise_delete(image_files_1)
-    noise_delete(image_files_2)
+    #noise_delete(image_files_1)
+    #noise_delete(image_files_2)
     print("アップスケーリング")
     #upscaling.upscaling(image_files_1, image_files_2)
 
     if AI_mode == "y":
+        print("色変化")
+        for image_file in tqdm(image_files_1):
+            black_to_transparency(image_file, f"./.temp_up/{image_file.replace('.jpg', '.png')}")
         print("文字列削除")
-        process_images(f"./temp_up/{image_files_1}")
-        process_images(f"./temp_up/{image_files_2}")
+        process_images(image_files_1)
+        #process_images(image_files_2)
+        for image_file in tqdm(image_files_1):
+            black_and_white_to_transparency2(image_file, f"./.temp/{image_file.replace('.jpg', '.png')}")
+
     else:
         print("色変化")
         for image_file in tqdm(image_files_2):
