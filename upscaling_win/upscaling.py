@@ -33,7 +33,7 @@ def upscaling(input_path1,input_path2, print_result=False,model="realesrgan-x4pl
             result = load_image(input_image)
             cv2.imwrite(f"{output_path}/{input_image}", result)
         print("ダウンスケール")
-        downscaling(upscal,no_upscal)
+        DownScaling(upscal, no_upscal)
 
     else:
         print("sizeを変更する必要がありません")
@@ -45,7 +45,7 @@ def upscaling(input_path1,input_path2, print_result=False,model="realesrgan-x4pl
             result = load_image(input_image)
             cv2.imwrite(f"{output_path}/{input_image}", result)
 
-def downscaling(folder_path1, folder_path2,output_path="./.temp_up"):
+def DownScaling(folder_path1, folder_path2, output_path="./.temp_up"):
 
     for temp in tqdm(range(len(folder_path1))):
         width, height, between_sizes_high, between_sizes_width = folder_path_get_image_size(f"{output_path}/{folder_path1[temp]}",f"{output_path}/{folder_path2[temp]}")
